@@ -8,7 +8,7 @@
   --border: #e4e4e7;
 }
 
-/* 🌸 GENEL GÖRÜNÜM */
+/*  GENEL GÖRÜNÜM */
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
@@ -24,7 +24,7 @@ body {
   --border: #e4e4e7;
 }
 
-/* 🌸 GENEL GÖRÜNÜM */
+/*  GENEL GÖRÜNÜM */
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
@@ -40,7 +40,7 @@ h1, h2, h3 {
   text-align: center;
 }
 
-/* 🌈 ÜST MENÜ */
+/*  ÜST MENÜ */
 .topbar {
   background: linear-gradient(90deg, var(--brand), #b98ef1);
   color: #fff;
@@ -83,7 +83,7 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 🌟 SAĞ KISIM */
+/*  SAĞ KISIM */
 .actions {
   margin-left: auto;
   display: flex;
@@ -125,14 +125,14 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 0.35);
 }
 
-/* 📦 ANA SAYFA / GENEL İÇERİK */
+/*  ANA SAYFA / GENEL İÇERİK */
 .container {
   max-width: 950px;
   margin: 60px auto;
   padding: 0 20px;
 }
 
-/* 🟣 TARİF KARTLARI */
+/*  TARİF KARTLARI */
 .tarif-listesi {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -199,7 +199,7 @@ h1, h2, h3 {
   color: #666;
 }
 
-/* 🌈 SEKME ARAYÜZÜ (soft pastel tonlar) */
+/*  SEKME ARAYÜZÜ (soft pastel tonlar) */
 .tab-container {
   display: flex;
   justify-content: center;
@@ -229,7 +229,7 @@ h1, h2, h3 {
   box-shadow: 0 3px 10px rgba(156, 106, 222, 0.25);
 }
 
-/* 🌟 Durum Etiketleri (soft versiyon) */
+/*  Durum Etiketleri (soft versiyon) */
 .durum.bekleyen {
   background: #fff5c0;
   color: #7a5d00;
@@ -254,7 +254,7 @@ h1, h2, h3 {
   font-size: 15px;
 }
 
-/* 🦶 FOOTER */
+/*  FOOTER */
 .footer {
   text-align: center;
   padding: 18px;
@@ -264,7 +264,7 @@ h1, h2, h3 {
   margin-top: 50px;
 }
 
-/* 📱 MOBİL */
+/*  MOBİL */
 @media (max-width: 720px) {
   .topbar .wrap { flex-wrap: wrap; justify-content: center; }
   .nav { flex-wrap: wrap; justify-content: center; }
@@ -285,7 +285,7 @@ h1, h2, h3 {
   text-align: center;
 }
 
-/* 🌈 ÜST MENÜ */
+/*  ÜST MENÜ */
 .topbar {
   background: linear-gradient(90deg, var(--brand), #b98ef1);
   color: #fff;
@@ -327,7 +327,7 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 🌟 SAĞ KISIM */
+/*  SAĞ KISIM */
 .actions {
   margin-left: auto;
   display: flex;
@@ -368,7 +368,7 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 0.35);
 }
 
-/* 📦 ANA SAYFA / GENEL İÇERİK */
+/* ANA SAYFA / GENEL İÇERİK */
 .container {
   max-width: 880px;
   margin: 50px auto;
@@ -384,7 +384,7 @@ h1, h2, h3 {
   text-align: center;
 }
 
-/* 📝 FORM TASARIMI */
+/*  FORM TASARIMI */
 form {
   background: white;
   padding: 30px;
@@ -427,7 +427,7 @@ textarea {
   min-height: 100px;
 }
 
-/* 🟣 BUTONLAR */
+/*  BUTONLAR */
 button {
   background: var(--brand);
   color: white;
@@ -446,7 +446,7 @@ button:hover {
   transform: translateY(-1px);
 }
 
-/* 💬 FLASH MESAJLAR */
+/*  FLASH MESAJLAR */
 .alert {
   border-radius: 10px;
   padding: 14px 16px;
@@ -468,7 +468,7 @@ button:hover {
   border-left: 5px solid #e53935;
 }
 
-/* ⚙️ ADMIN PANELİ */
+/*  ADMIN PANELİ */
 .admin-section {
   margin-bottom: 40px;
   background: #fff;
@@ -516,7 +516,7 @@ tr:nth-child(even) td {
   background: #faf8ff;
 }
 
-/* 🟣 KÜÇÜK BUTONLAR */
+/*  KÜÇÜK BUTONLAR */
 .btn-mini {
   display: inline-block;
   background: var(--brand);
@@ -539,7 +539,7 @@ tr:nth-child(even) td {
 .btn-mini.green { background: #27ae60; }
 .btn-mini.green:hover { background: #1e8e4f; }
 
-/* 🟣 TARİF KARTLARI */
+/* TARİF KARTLARI */
 .tarif-listesi {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -591,7 +591,7 @@ tr:nth-child(even) td {
   font-weight: 600;
 }
 
-/* 🍲 TARİF DETAY SAYFASI */
+/*  TARİF DETAY SAYFASI */
 .tarif-detay-kapsayici {
   max-width: 800px;
   margin: 40px auto;
@@ -601,7 +601,7 @@ tr:nth-child(even) td {
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-/* 🟣 MODAL TASARIMI */
+/*  MODAL TASARIMI */
 .modal {
   display: none;
   position: fixed;
@@ -636,7 +636,7 @@ tr:nth-child(even) td {
 
 .close:hover { color: var(--brand-dark); }
 
-/* 🌈 SEKME ARAYÜZÜ (soft pastel tonlar) */
+/*  SEKME ARAYÜZÜ  */
 .tab-container {
   display: flex;
   justify-content: center;
@@ -666,7 +666,7 @@ tr:nth-child(even) td {
   box-shadow: 0 3px 10px rgba(156, 106, 222, 0.25);
 }
 
-/* 🌟 Durum Etiketleri (soft versiyon) */
+/*  Durum Etiketleri (soft versiyon) */
 .durum.bekleyen {
   background: #fff5c0;
   color: #7a5d00;
@@ -688,7 +688,7 @@ tr:nth-child(even) td {
   border-radius: 6px;
 }
 
-/* 🦶 FOOTER */
+/*  FOOTER */
 .footer {
   text-align: center;
   padding: 15px;
@@ -698,7 +698,7 @@ tr:nth-child(even) td {
   margin-top: 40px;
 }
 
-/* 📱 MOBİL */
+/*  MOBİL */
 @media (max-width: 720px) {
   .topbar .wrap { flex-wrap: wrap; justify-content: center; }
   .nav { flex-wrap: wrap; justify-content: center; }
@@ -710,7 +710,7 @@ tr:nth-child(even) td {
   table { font-size: 13px; }
   th, td { padding: 8px; }
 
-  /* 🍽️ Detayını Gör Butonu */
+  /*  Detayını Gör Butonu */
 .btn-detay {
   display: inline-block;
   background: var(--brand);

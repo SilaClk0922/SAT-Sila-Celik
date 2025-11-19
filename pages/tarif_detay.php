@@ -3,13 +3,13 @@ require __DIR__ . '/../includes/header.php';
 
 $tarifID = $_GET['id'] ?? null;
 
-// 🚨 Geçersiz bağlantı kontrolü
+//  Geçersiz bağlantı kontrolü
 if (!$tarifID) {
     flash('index', 'Geçersiz tarif bağlantısı.', 'err');
     redirect('/pages/index.php');
 }
 
-// 🧩 Veritabanından tarif bilgilerini çek
+//  Veritabanından tarif bilgilerini çek
 try {
     $stmt = $conn->prepare("
         SELECT 

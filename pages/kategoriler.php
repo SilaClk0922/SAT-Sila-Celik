@@ -2,7 +2,7 @@
 require __DIR__ . '/../includes/header.php';
 require_role('Admin');
 
-// 🔹 Kategori ekleme
+//  Kategori ekleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['kategori_adi'])) {
     $kategoriAdi = trim($_POST['kategori_adi']);
     $csrf = $_POST['_csrf'] ?? '';
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['kategori_adi'])) {
     redirect('/pages/kategoriler.php');
 }
 
-// 🔹 Kategori silme
+//  Kategori silme
 if (isset($_GET['sil'])) {
     $id = (int)$_GET['sil'];
     try {
@@ -41,7 +41,7 @@ if (isset($_GET['sil'])) {
     redirect('/pages/kategoriler.php');
 }
 
-// 🔹 Kategori düzenleme
+//  Kategori düzenleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['duzenle_id'])) {
     $id = (int)$_POST['duzenle_id'];
     $adi = trim($_POST['duzenle_adi']);
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['duzenle_id'])) {
     redirect('/pages/kategoriler.php');
 }
 
-// 🔹 Kategorileri listele
+//  Kategorileri listele
 try {
     $kategoriler = $conn->query("SELECT * FROM Kategoriler ORDER BY KategoriAdi ASC")->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -102,7 +102,7 @@ try {
   </table>
 </div>
 
-<!-- 🟣 Modal Penceresi -->
+<!--  Modal Penceresi -->
 <div id="kategoriModal" class="modal">
   <div class="modal-content">
     <span class="close" id="modalKapat">&times;</span>

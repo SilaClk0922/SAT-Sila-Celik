@@ -2,7 +2,7 @@
 require __DIR__ . '/../includes/header.php';
 require_login(); // yalnızca giriş yapan kullanıcılar
 
-// 🟣 Kategorileri veritabanından çek
+//  Kategorileri veritabanından çek
 $kategoriListesi = [];
 try {
     $katSorgu = $conn->query("SELECT KategoriID, KategoriAdi FROM Kategoriler ORDER BY KategoriAdi ASC");
@@ -11,7 +11,7 @@ try {
     flash('tarif', 'Kategoriler yüklenirken hata oluştu: ' . $e->getMessage(), 'err');
 }
 
-// 🟢 Form gönderimi
+//  Form gönderimi
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tarifAdi = trim($_POST['baslik'] ?? '');
     $hazirlanis = trim($_POST['aciklama'] ?? '');
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('/pages/tarif_ekle.php');
     }
 
-    // 📷 Resim yükleme işlemi
+    //  Resim yükleme işlemi
     $goruntu = null;
     if (!empty($_FILES['resim']['name'])) {
         $uploadsDir = __DIR__ . '/../uploads/';
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 🗂️ Veritabanına ekle (OnayDurumu = Beklemede)
+    //  Veritabanına ekle (OnayDurumu = Beklemede)
     try {
         $sql = "
             INSERT INTO Tarifler 

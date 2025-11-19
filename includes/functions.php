@@ -1,7 +1,4 @@
 <?php
-// includes/functions.php
-
-
 //  OTURUM VE SİSTEM TANIMLARI
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -30,10 +27,9 @@ function redirect(string $path = '/'): void {
 // FLASH MESAJ SİSTEMİ
  
 /*
- * Flash mesaj oluştur veya al.
- * 
- * 🔹 flash('key', 'Mesaj', 'ok'|'err') → mesajı kaydeder
- * 🔹 flash('key') → mesajı döndürür & siler
+   Flash mesaj oluştur veya al.
+   flash('key', 'Mesaj', 'ok'|'err') → mesajı kaydeder
+   flash('key') → mesajı döndürür & siler
  */
 function flash(string $key, ?string $message = null, string $type = 'ok'): ?array {
     if ($message !== null) {
@@ -49,7 +45,7 @@ function flash(string $key, ?string $message = null, string $type = 'ok'): ?arra
 }
 
 
- //Tüm flash mesajlarını ekrana bas (renkli uyarı kutuları)
+ //Tüm flash mesajlarını ekrana bas renkli uyarı kutuları.
  
 function render_flash(): void {
     if (empty($_SESSION['flash'])) return;
@@ -80,7 +76,7 @@ function csrf_verify(?string $token): bool {
 }
 
 
-  // 👤 KULLANICI / AUTH YARDIMCILARI
+  //  KULLANICI / AUTH YARDIMCILARI
   
 
 function is_logged_in(): bool {
@@ -110,7 +106,7 @@ function require_login(): void {
 }
 
 
- //Belirli rol zorunlu (örneğin: Admin)
+ //Belirli rol zorunlu 
  
 function require_role(string $role): void {
     if (!is_logged_in() || strcasecmp(current_user_role() ?? '', $role) !== 0) {

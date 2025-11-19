@@ -2,7 +2,7 @@
 require __DIR__ . '/../includes/header.php';
 require_role('Admin');
 
-// 🔹 Tüm tarifleri durumlarına göre çek
+//  Tüm tarifleri durumlarına göre çek
 try {
     $tarifler = [
         'Bekleyen' => [],
@@ -28,7 +28,7 @@ try {
     flash('tarif_onay', 'Tarifler yüklenemedi: ' . $e->getMessage(), 'err');
 }
 
-// 🔹 Onay / Red işlemleri
+//  Onay / Red işlemleri
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['durum'])) {
     $tarifID = (int)$_POST['tarif_id'];
     $durum = $_POST['durum'];
@@ -60,14 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
 <h2>👩‍🍳 Tarif Yönetimi</h2>
 <?php render_flash('tarif_onay'); ?>
 
-<!-- 🔘 Sekmeler -->
+<!--  Sekmeler -->
 <div class="tab-container">
   <button class="tab-link active" data-tab="Bekleyen">🕓 Bekleyen</button>
   <button class="tab-link" data-tab="Onaylı">✅ Onaylı</button>
   <button class="tab-link" data-tab="Reddedildi">❌ Reddedilen</button>
 </div>
 
-<!-- 📋 Tarif Tabloları -->
+<!--  Tarif Tabloları -->
 <?php foreach (['Bekleyen', 'Onaylı', 'Reddedildi'] as $durum): ?>
   <div class="tab-content <?= $durum === 'Bekleyen' ? 'active' : '' ?>" id="<?= $durum ?>">
     <div class="admin-section">
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
   </div>
 <?php endforeach; ?>
 
-<!-- 🟣 Modal -->
+<!--  Modal -->
 <div id="onayModal" class="modal">
   <div class="modal-content">
     <span class="close" id="modalKapat">&times;</span>
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
 </div>
 
 <script>
-// 🔘 Sekme geçişi
+//  Sekme geçişi
 const tabs = document.querySelectorAll(".tab-link");
 const contents = document.querySelectorAll(".tab-content");
 
@@ -142,7 +142,7 @@ tabs.forEach(btn => {
   });
 });
 
-// 🟣 Modal kontrolü
+//  Modal kontrolü
 const modal = document.getElementById("onayModal");
 const span = document.getElementById("modalKapat");
 const idInput = document.getElementById("tarif_id");

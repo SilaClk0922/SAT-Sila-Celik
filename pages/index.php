@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../includes/header.php';
 
-// 🌿 Yalnızca onaylı tarifleri getir
+//  Yalnızca onaylı tarifleri getir
 try {
     $tarifler = $conn->query("
         SELECT 
