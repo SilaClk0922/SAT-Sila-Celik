@@ -3,13 +3,11 @@ require __DIR__ . '/../includes/header.php';
 
 $tarifID = $_GET['id'] ?? null;
 
-//  Geçersiz bağlantı kontrolü
 if (!$tarifID) {
     flash('index', 'Geçersiz tarif bağlantısı.', 'err');
     redirect('/pages/index.php');
 }
 
-//  Veritabanından tarif bilgilerini çek
 try {
     $stmt = $conn->prepare("
         SELECT 
@@ -44,6 +42,7 @@ try {
   </div>
 
   <div class="tarif-detay-icerik">
+
     <!-- Görsel -->
     <div class="tarif-detay-resim">
       <?php if (!empty($tarif['Goruntu'])): ?>
@@ -53,7 +52,7 @@ try {
       <?php endif; ?>
     </div>
 
-    <!-- Bilgiler -->
+    <!-- Temel Bilgiler -->
     <div class="tarif-detay-bilgi">
       <p><strong>📂 Kategori:</strong> <?= e($tarif['KategoriAdi'] ?? 'Kategori Yok') ?></p>
       <p><strong>👨‍🍳 Ekleyen:</strong> <?= e($tarif['Ekleyen'] ?? 'Bilinmiyor') ?></p>
@@ -63,18 +62,15 @@ try {
     <!-- Malzemeler -->
     <div class="tarif-bolum">
       <h3>🧂 Malzemeler</h3>
-      <div class="tarif-kutu">
-        <?= nl2br(e($tarif['Malzemeler'])) ?>
-      </div>
+      <div class="tarif-kutu"><?= nl2br(e($tarif['Malzemeler'])) ?></div>
     </div>
 
     <!-- Hazırlanışı -->
     <div class="tarif-bolum">
       <h3>👩‍🍳 Hazırlanışı</h3>
-      <div class="tarif-kutu">
-        <?= nl2br(e($tarif['Hazirlanis'])) ?>
-      </div>
+      <div class="tarif-kutu"><?= nl2br(e($tarif['Hazirlanis'])) ?></div>
     </div>
+
   </div>
 </div>
 

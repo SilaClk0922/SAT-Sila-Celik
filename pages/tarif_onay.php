@@ -31,9 +31,8 @@ try {
 //  Onay / Red işlemleri
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['durum'])) {
     $tarifID = (int)$_POST['tarif_id'];
-    $durum = $_POST['durum'];
-    $aciklama = trim($_POST['aciklama'] ?? '');
-    $csrf = $_POST['_csrf'] ?? '';
+    $durum   = $_POST['durum'];
+    $csrf    = $_POST['_csrf'] ?? '';
 
     if (!csrf_verify($csrf)) {
         flash('tarif_onay', 'Güvenlik anahtarı geçersiz.', 'err');
@@ -41,12 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
     }
 
     try {
+        // AdminNotu artık yok
         $stmt = $conn->prepare("
             UPDATE Tarifler 
-            SET OnayDurumu = ?, AdminNotu = ?, OnayTarihi = GETDATE() 
+            SET OnayDurumu = ?, OnayTarihi = GETDATE()
             WHERE TarifID = ?
         ");
-        $stmt->execute([$durum, $aciklama, $tarifID]);
+        $stmt->execute([$durum, $tarifID]);
+
         $msg = $durum === 'Onaylı' ? 'Tarif onaylandı 🎉' : 'Tarif reddedildi ❌';
         flash('tarif_onay', $msg, 'ok');
     } catch (PDOException $e) {
@@ -60,14 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
 <h2>👩‍🍳 Tarif Yönetimi</h2>
 <?php render_flash('tarif_onay'); ?>
 
-<!--  Sekmeler -->
+<!-- Sekmeler -->
 <div class="tab-container">
   <button class="tab-link active" data-tab="Bekleyen">🕓 Bekleyen</button>
   <button class="tab-link" data-tab="Onaylı">✅ Onaylı</button>
   <button class="tab-link" data-tab="Reddedildi">❌ Reddedilen</button>
 </div>
 
-<!--  Tarif Tabloları -->
+<!-- Tab içerikleri -->
 <?php foreach (['Bekleyen', 'Onaylı', 'Reddedildi'] as $durum): ?>
   <div class="tab-content <?= $durum === 'Bekleyen' ? 'active' : '' ?>" id="<?= $durum ?>">
     <div class="admin-section">
@@ -87,23 +88,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($tarifler[$durum] as $t): ?>
-              <tr>
-                <td><?= e($t['TarifID']) ?></td>
-                <td><?= e($t['TarifAdi']) ?></td>
-                <td><?= e($t['KategoriAdi'] ?? '-') ?></td>
-                <td><?= e($t['Ekleyen'] ?? '-') ?></td>
-                <td><?= date('d.m.Y', strtotime($t['EklemeTarihi'])) ?></td>
-                <td><span class="durum <?= strtolower($durum) ?>"><?= e($durum) ?></span></td>
-                <td>
-                  <?php if ($durum === 'Bekleyen'): ?>
-                    <button class="btn-mini green" onclick="modalAc('Onaylı', <?= e($t['TarifID']) ?>)">Onayla</button>
-                    <button class="btn-mini red" onclick="modalAc('Reddedildi', <?= e($t['TarifID']) ?>)">Reddet</button>
-                  <?php endif; ?>
-                  <a class="btn-mini" href="<?= SITE_URL ?>/pages/tarif_detay.php?id=<?= e($t['TarifID']) ?>">Görüntüle</a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
+          <?php foreach ($tarifler[$durum] as $t): ?>
+            <tr>
+              <td><?= e($t['TarifID']) ?></td>
+              <td><?= e($t['TarifAdi']) ?></td>
+              <td><?= e($t['KategoriAdi'] ?? '-') ?></td>
+              <td><?= e($t['Ekleyen'] ?? '-') ?></td>
+              <td><?= date('d.m.Y', strtotime($t['EklemeTarihi'])) ?></td>
+              <td><span class="durum <?= strtolower($durum) ?>"><?= e($durum) ?></span></td>
+              <td>
+                <?php if ($durum === 'Bekleyen'): ?>
+                  <button class="btn-mini green"
+                          onclick="modalAc('Onaylı', <?= (int)$t['TarifID'] ?>)">Onayla</button>
+                  <button class="btn-mini red"
+                          onclick="modalAc('Reddedildi', <?= (int)$t['TarifID'] ?>)">Reddet</button>
+                <?php endif; ?>
+
+                <a class="btn-mini"
+                   href="<?= SITE_URL ?>/pages/tarif_detay.php?id=<?= (int)$t['TarifID'] ?>">
+                   Görüntüle
+                </a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
           </tbody>
         </table>
       <?php endif; ?>
@@ -111,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
   </div>
 <?php endforeach; ?>
 
-<!--  Modal -->
+<!-- Modal – textarea YOK -->
 <div id="onayModal" class="modal">
   <div class="modal-content">
     <span class="close" id="modalKapat">&times;</span>
@@ -121,15 +128,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
       <?= csrf_input() ?>
       <input type="hidden" name="tarif_id" id="tarif_id">
       <input type="hidden" name="durum" id="durum">
-      <label>Açıklama / Red Nedeni:</label>
-      <textarea name="aciklama" rows="3" placeholder="İstersen kısa bir not ekle..."></textarea>
-      <button type="submit" id="modalButon">Kaydet</button>
+      <button type="submit" id="modalButon" style="margin-top: 15px;">Kaydet</button>
     </form>
   </div>
 </div>
 
 <script>
-//  Sekme geçişi
+// Sekmeler
 const tabs = document.querySelectorAll(".tab-link");
 const contents = document.querySelectorAll(".tab-content");
 
@@ -142,20 +147,21 @@ tabs.forEach(btn => {
   });
 });
 
-//  Modal kontrolü
-const modal = document.getElementById("onayModal");
-const span = document.getElementById("modalKapat");
+// Modal
+const modal   = document.getElementById("onayModal");
+const span    = document.getElementById("modalKapat");
 const idInput = document.getElementById("tarif_id");
 const durumInput = document.getElementById("durum");
-const baslik = document.getElementById("modalBaslik");
-const buton = document.getElementById("modalButon");
+const baslik  = document.getElementById("modalBaslik");
+const buton   = document.getElementById("modalButon");
 
 function modalAc(durum, id) {
   modal.style.display = "block";
   idInput.value = id;
   durumInput.value = durum;
+
   baslik.innerText = (durum === 'Onaylı') ? "Tarifi Onayla" : "Tarifi Reddet";
-  buton.innerText = (durum === 'Onaylı') ? "Onayla" : "Reddet";
+  buton.innerText  = (durum === 'Onaylı') ? "Onayla"        : "Reddet";
   buton.style.background = (durum === 'Onaylı') ? "var(--brand)" : "#e74c3c";
 }
 
