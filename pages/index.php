@@ -22,7 +22,7 @@ try {
 }
 ?>
 
-<h2>🍽️ En Yeni Onaylı Tarifler</h2>
+<h2>En Yeni Onaylı Tarifler</h2>
 <?php render_flash(); ?>
 
 <div class="tarif-listesi">

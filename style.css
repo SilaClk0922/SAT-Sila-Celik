@@ -605,7 +605,7 @@ tr:nth-child(even) td {
 .modal {
   display: none;
   position: fixed;
-  z-index: 100;
+  z-index: 10;
   left: 0; top: 0;
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.4);
@@ -751,6 +751,28 @@ tr:nth-child(even) td {
   margin-top: 4px;
   font-size: 0.8rem;
   color: #8d7c3a;
+}
+
+/* Admin düzenleme formu düzenle */
+.admin-edit-form {
+    position: relative;
+    z-index: 9999 !important;
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 750px;
+    margin: 40px auto;
+}
+
+/* Kaydet butonu görünür olsun */
+.admin-edit-form button {
+    display: block;
+    margin-top: 15px;
+    width: 100%;
+    font-size: 17px;
+    padding: 14px;
+    z-index: 99999;
 }
 
 }

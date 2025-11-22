@@ -15,7 +15,7 @@ $stmt->execute(["%$q%"]);
 $sonuclar = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<h2>🔍 Arama Sonuçları: <b><?= e($q) ?></b></h2>
+<h2> Arama Sonuçları: <b><?= e($q) ?></b></h2>
 
 <div class="tarif-listesi">
 <?php if (!$sonuclar): ?>

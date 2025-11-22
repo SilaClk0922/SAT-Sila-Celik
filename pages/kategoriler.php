@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['duzenle_id'])) {
     try {
         $stmt = $conn->prepare("UPDATE Kategoriler SET KategoriAdi = ? WHERE KategoriID = ?");
         $stmt->execute([$adi, $id]);
-        flash('kategori', 'Kategori başarıyla güncellendi ✏️', 'ok');
+        flash('kategori', 'Kategori başarıyla güncellendi ', 'ok');
     } catch (PDOException $e) {
         flash('kategori', 'Düzenleme hatası: ' . $e->getMessage(), 'err');
     }
@@ -71,7 +71,7 @@ try {
 }
 ?>
 
-<h2>📂 Kategori Yönetimi</h2>
+<h2> Kategori Yönetimi</h2>
 <?php render_flash('kategori'); ?>
 
 <div class="admin-section">

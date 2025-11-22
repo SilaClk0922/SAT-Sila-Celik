@@ -67,7 +67,7 @@ try {
 
     <!-- Hazırlanışı -->
     <div class="tarif-bolum">
-      <h3>👩‍🍳 Hazırlanışı</h3>
+      <h3>Hazırlanışı</h3>
       <div class="tarif-kutu"><?= nl2br(e($tarif['Hazirlanis'])) ?></div>
     </div>
 

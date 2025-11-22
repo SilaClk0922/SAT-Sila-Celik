@@ -76,7 +76,7 @@ echo "</div>";
 </div>
 
 <div class="admin-section">
-  <h3>🧾 Son Eklenen Tarifler</h3>
+  <h3>Eklenen Tarifler</h3>
 
   <?php if (empty($tarifler)): ?>
     <p>Henüz tarif bulunmamaktadır.</p>

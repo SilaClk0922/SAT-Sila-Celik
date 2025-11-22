@@ -34,7 +34,7 @@ require_once __DIR__ . '/functions.php';        // Yardımcı fonksiyonlar (sess
 
     <div class="actions">
       <?php if (is_logged_in()): ?>
-        <span class="user">👋 Merhaba, <b><?= e(current_user_name() ?? 'Kullanıcı') ?></b></span>
+        <span class="user"> Merhaba, <b><?= e(current_user_name() ?? 'Kullanıcı') ?></b></span>
         <a class="btn btn-outline" href="<?= SITE_URL ?>/pages/logout.php">Çıkış</a>
       <?php else: ?>
         <a class="btn btn-light" href="<?= SITE_URL ?>/pages/login.php">Giriş</a>

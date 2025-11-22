@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['d
 }
 ?>
 
-<h2>👩‍🍳 Tarif Yönetimi</h2>
+<h2> Tarif Yönetimi</h2>
 <?php render_flash('tarif_onay'); ?>
 
 <!-- Sekmeler -->
