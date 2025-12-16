@@ -1,48 +1,48 @@
 <?php
 require __DIR__ . '/../includes/header.php';
-require_role('Admin');
+require_login();
 
-// ID kontrolü
 $tarifID = $_GET['id'] ?? null;
-$csrf    = $_GET['_csrf'] ?? '';
 
 if (!$tarifID || !is_numeric($tarifID)) {
-    flash('tarif_onay', 'Geçersiz tarif ID.', 'err');
-    redirect('/pages/tarif_onay.php');
+    flash('genel', 'Geçersiz tarif ID.', 'err');
+    redirect('/pages/kullanici_paneli.php');
 }
 
-if (!csrf_verify($csrf)) {
-    flash('tarif_onay', 'Güvenlik doğrulaması başarısız.', 'err');
-    redirect('/pages/tarif_onay.php');
+// Tarif bilgisi
+$stmt = $conn->prepare("SELECT * FROM Tarifler WHERE TarifID = ?");
+$stmt->execute([$tarifID]);
+$tarif = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$tarif) {
+    flash('genel', 'Tarif bulunamadı!', 'err');
+    redirect('/pages/kullanici_paneli.php');
 }
 
-try {
-    // Görseli çek
-    $stmt = $conn->prepare("SELECT Goruntu FROM Tarifler WHERE TarifID = ?");
-    $stmt->execute([$tarifID]);
-    $tarif = $stmt->fetch(PDO::FETCH_ASSOC);
+// Yetki kontrolü
+if (current_user_role() !== 'Admin' && $tarif['KullaniciID'] != current_user_id()) {
+    flash('genel', 'Bu tarifi silme yetkin yok.', 'err');
+    redirect('/pages/kullanici_paneli.php');
+}
 
-    if (!$tarif) {
-        flash('tarif_onay', 'Tarif bulunamadı.', 'err');
-        redirect('/pages/tarif_onay.php');
+// Fotoğrafı sil
+if (!empty($tarif['Goruntu'])) {
+    $fotoYol = __DIR__ . '/../' . $tarif['Goruntu'];
+    if (file_exists($fotoYol)) {
+        unlink($fotoYol);
     }
-
-    // Veritabanından sil
-    $delete = $conn->prepare("DELETE FROM Tarifler WHERE TarifID = ?");
-    $delete->execute([$tarifID]);
-
-    // Görseli sil
-    if (!empty($tarif['Goruntu'])) {
-        $imagePath = __DIR__ . '/../' . $tarif['Goruntu'];
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
-    }
-
-    flash('tarif_onay', 'Tarif başarıyla silindi 🗑️', 'ok');
-
-} catch (PDOException $e) {
-    flash('tarif_onay', 'Silme hatası: ' . $e->getMessage(), 'err');
 }
 
-redirect('/pages/tarif_onay.php');
+// Tarif kaydını sil
+$sil = $conn->prepare("DELETE FROM Tarifler WHERE TarifID = ?");
+$sil->execute([$tarifID]);
+
+flash('genel', 'Tarif başarıyla silindi ✔', 'ok');
+
+if (current_user_role() === 'Admin') {
+    redirect('/pages/admin_tariflerim.php');
+} else {
+    redirect('/pages/kullanici_paneli.php');
+}
+exit;
+?>

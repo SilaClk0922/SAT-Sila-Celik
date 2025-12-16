@@ -1,13 +1,15 @@
 <?php
+session_start();
 require __DIR__ . '/../includes/functions.php';
 
-// Oturumu kapat
+// Tüm oturum verilerini temizle
 session_unset();
 session_destroy();
 
-// Yeni oturum başlat (flash mesaj için)
+// Logout sonrası yeni session başlat (sadece flash mesaj için)
 session_start();
 flash('auth', 'Oturum başarıyla kapatıldı.', 'ok');
 
-// Ana sayfaya yönlendir
-redirect('/pages/index.php');
+// Login sayfasına yönlendir
+redirect('/pages/login.php');
+exit;

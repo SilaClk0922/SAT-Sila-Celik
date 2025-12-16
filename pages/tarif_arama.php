@@ -3,6 +3,8 @@ require __DIR__ . '/../includes/header.php';
 
 $ara = trim($_GET['ara'] ?? '');
 
+/*  Boş arama kontrolü
+   - Arama kelimesi yoksa kullanıcı bilgilendirilir */
 if ($ara === '') {
     flash('arama', 'Arama yapmak için bir kelime giriniz!', 'err');
 }
@@ -40,10 +42,11 @@ if ($ara !== '') {
 }
 ?>
 
+<!-- Arama sonuçlarının listelendiği alan -->
 <div class="tarif-listesi">
 
 <?php if (empty($sonuclar)): ?>
-    <p> “<?= e($ara) ?>” için sonuç bulunamadı.</p>
+    <p>🔎 “<?= e($ara) ?>” için sonuç bulunamadı.</p>
 <?php else: ?>
     <?php foreach ($sonuclar as $t): ?>
         <div class="tarif-kart">

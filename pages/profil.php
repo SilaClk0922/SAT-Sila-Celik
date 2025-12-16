@@ -2,64 +2,106 @@
 require __DIR__ . '/../includes/header.php';
 
 if (!is_logged_in()) {
-    flash('genel', 'Bu sayfaya erişmek için giriş yapmalısın.', 'err');
     redirect('/pages/login.php');
 }
 
-$userID = current_user_id();
-
-// Kullanıcı bilgilerini getir
-$stmt = $conn->prepare("SELECT KullaniciAdi, AdSoyad, Email, ProfilResmi, KayitTarihi 
-                        FROM Kullanicilar WHERE KullaniciID = ?");
-$stmt->execute([$userID]);
-$u = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Profil resmi yoksa varsayılan avatar
-$profilResmi = $u['ProfilResmi'] 
-    ? SITE_URL . "/uploads/profil/" . $u['ProfilResmi']
-    : SITE_URL . "/assets/default_avatar.png";
+$adSoyad = $_SESSION['user']['AdSoyad'] ?? 'Bilinmiyor';
+$email   = $_SESSION['user']['Email'] ?? 'Bilinmiyor';
+$rol     = $_SESSION['user']['rol'] ?? 'Kullanıcı';
+$avatar  = $_SESSION['user']['Avatar'] ?? '';
 ?>
+<style>
+/*  Profil Kartı */
+.profil-wrapper {
+    max-width: 950px;
+    margin: 40px auto;
+    padding: 40px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
 
-<h2 style="text-align:center; margin-top:25px;">👤 Profilim</h2>
+/* Avatar */
+.profil-avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    border: 4px solid #d9c3ff;
+}
 
-<div style="
-    max-width:900px;
-    margin:30px auto;
-    display:flex;
-    gap:30px;
-    background:#fff;
-    padding:30px;
-    border-radius:18px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.08);
-">
+.profil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-    <!-- SOL: PROFIL FOTO -->
-    <div style="text-align:center;">
-        <img src="<?= $profilResmi ?>" 
-             style="width:150px; height:150px; border-radius:12px; object-fit:cover;">
+/* Bilgi Alanı */
+.profil-info {
+    flex: 1;
+}
 
-        <a href="<?= SITE_URL ?>/pages/profil_duzenle.php"
-           class="btn"
-           style="margin-top:15px; display:block; text-align:center;">
-           Profili Düzenle
-        </a>
+.profil-info h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #7b4bbe;
+    margin-bottom: 20px;
+}
 
-        <a href="<?= SITE_URL ?>/pages/sifre_degistir.php"
-           class="btn-mini"
-           style="background:#ff7675; margin-top:8px; display:block; text-align:center;">
-           Şifre Değiştir
-        </a>
+/* Bilgi satırı */
+.profil-info p {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+/* Düzenle Butonu */
+.profil-edit-btn {
+    margin-top: 18px;
+    display: inline-block;
+    background: #b58bff;
+    color: white !important;
+    padding: 10px 22px;
+    font-size: 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.profil-edit-btn:hover {
+    background: #9b60e7;
+    transform: translateY(-2px);
+}
+</style>
+
+<h2 style="text-align:center; margin-top:20px; color:#7b4bbe;">
+    <i class="fa-solid fa-user-circle"></i> Profilim
+</h2>
+
+<div class="profil-wrapper">
+
+    <!-- Avatar -->
+    <div>
+        <div class="profil-avatar">
+            <img src="<?= $avatar ? SITE_URL.'/'.$avatar : SITE_URL.'/assets/avatar-default.png' ?>" alt="">
+        </div>
+
+        <a class="profil-edit-btn" href="<?= SITE_URL ?>/pages/profil_duzenle.php">Profili Düzenle</a>
     </div>
 
-    <!-- SAĞ: BİLGİLER -->
-    <div style="flex:1;">
-        <h3 style="color:var(--brand-dark); margin-bottom:15px;">Kullanıcı Bilgileri</h3>
+    <!-- Bilgiler -->
+    <div class="profil-info">
+        <h2>Kullanıcı Bilgileri</h2>
 
-        <p><b>Ad Soyad:</b> <?= e($u['AdSoyad']) ?></p>
-        <p><b>Kullanıcı Adı:</b> <?= e($u['KullaniciAdi']) ?></p>
-        <p><b>E-posta:</b> <?= e($u['Email']) ?></p>
-        <p><b>Üyelik Tarihi:</b> <?= date('d.m.Y', strtotime($u['KayitTarihi'])) ?></p>
+        <p><strong>Ad Soyad:</strong> <?= e($adSoyad) ?></p>
+        <p><strong>E-posta:</strong> <?= e($email) ?></p>
+        <p><strong>Rol:</strong> <?= e($rol) ?></p>
     </div>
+
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

@@ -19,18 +19,20 @@ try {
             break;
 
         case 'silKullanici':
-            // Kullanıcının tariflerini de silelim (FK yoksa çakışmasın)
+            // Kullanıcının tariflerini silelim 
             $conn->prepare("DELETE FROM Tarifler WHERE KullaniciID=?")->execute([$id]);
             $conn->prepare("DELETE FROM Kullanicilar WHERE KullaniciID=?")->execute([$id]);
             flash('auth', 'Kullanıcı silindi.', 'ok');
             break;
 
+/*  Tarif onaylama işlemi */
         case 'onayla':
             $stmt = $conn->prepare("UPDATE Tarifler SET Onay=1 WHERE TarifID=?");
             $stmt->execute([$id]);
             flash('auth', 'Tarif onaylandı 🎉', 'ok');
             break;
 
+ /* Tarif silme işlemi */
         case 'silTarif':
             $stmt = $conn->prepare("DELETE FROM Tarifler WHERE TarifID=?");
             $stmt->execute([$id]);

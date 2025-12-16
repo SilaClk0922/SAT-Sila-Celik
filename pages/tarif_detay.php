@@ -1,77 +1,97 @@
 <?php
 require __DIR__ . '/../includes/header.php';
 
+// Tarif ID alma
 $tarifID = $_GET['id'] ?? null;
 
-if (!$tarifID) {
-    flash('index', 'Geçersiz tarif bağlantısı.', 'err');
+if (!$tarifID || !is_numeric($tarifID)) {
+    flash('genel', 'Geçersiz tarif ID.', 'err');
     redirect('/pages/index.php');
 }
 
-try {
-    $stmt = $conn->prepare("
-        SELECT 
-            t.TarifAdi,
-            t.Malzemeler,
-            t.Hazirlanis,
-            t.Goruntu,
-            t.EklemeTarihi,
-            k.AdSoyad AS Ekleyen,
-            c.KategoriAdi
-        FROM Tarifler t
-        LEFT JOIN Kategoriler c ON t.KategoriID = c.KategoriID
-        LEFT JOIN Kullanicilar k ON t.KullaniciID = k.KullaniciID
-        WHERE t.TarifID = ?
-    ");
-    $stmt->execute([$tarifID]);
-    $tarif = $stmt->fetch(PDO::FETCH_ASSOC);
+// Tarif verisi
+$stmt = $conn->prepare("
+    SELECT t.*, k.KategoriAdi, u.AdSoyad AS KullaniciAdi
+    FROM Tarifler t
+    LEFT JOIN Kategoriler k ON t.KategoriID = k.KategoriID
+    LEFT JOIN Kullanicilar u ON t.KullaniciID = u.KullaniciID
+    WHERE t.TarifID = ?
+");
+$stmt->execute([$tarifID]);
+$tarif = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$tarif) {
-        flash('index', 'Tarif bulunamadı.', 'err');
-        redirect('/pages/index.php');
-    }
-} catch (PDOException $e) {
-    flash('index', 'Veritabanı hatası: ' . $e->getMessage(), 'err');
+if (!$tarif) {
+    flash('genel', 'Tarif bulunamadı.', 'err');
     redirect('/pages/index.php');
 }
 ?>
 
-<div class="tarif-detay-kapsayici">
-  <div class="tarif-baslik">
-    <h2><?= e($tarif['TarifAdi']) ?></h2>
-  </div>
+<style>
+.detay-wrapper {
+    max-width: 850px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
 
-  <div class="tarif-detay-icerik">
+.detay-img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
 
-    <!-- Görsel -->
-    <div class="tarif-detay-resim">
-      <?php if (!empty($tarif['Goruntu'])): ?>
-        <img src="<?= SITE_URL . '/' . e($tarif['Goruntu']) ?>" alt="<?= e($tarif['TarifAdi']) ?>">
-      <?php else: ?>
-        <img src="<?= SITE_URL ?>/assets/no-image.png" alt="Resim Yok">
-      <?php endif; ?>
+.detay-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #7b4bbe;
+    margin-bottom: 10px;
+}
+
+.detay-info-box {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.detay-info-item {
+    background: #f4e9ff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #6a36c9;
+}
+
+.detay-section-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #7b4bbe;
+    margin-top: 20px;
+}
+</style>
+
+<div class="detay-wrapper">
+
+    <?php if ($tarif['Goruntu']): ?>
+        <img src="<?= SITE_URL ?>/<?= $tarif['Goruntu'] ?>" class="detay-img">
+    <?php endif; ?>
+
+    <div class="detay-title"><?= e($tarif['TarifAdi']) ?></div>
+
+    <div class="detay-info-box">
+        <div class="detay-info-item">⏳ Pişirme: <?= e($tarif['PisirmeSuresi'] ?? 'Belirtilmemiş') ?></div>
+        <div class="detay-info-item">👥 Kaç Kişilik: <?= e($tarif['KacKisilik'] ?? 'Belirtilmemiş') ?></div>
+        <div class="detay-info-item">🏷 Kategori: <?= e($tarif['KategoriAdi']) ?></div>
     </div>
 
-    <!-- Temel Bilgiler -->
-    <div class="tarif-detay-bilgi">
-      <p><strong>📂 Kategori:</strong> <?= e($tarif['KategoriAdi'] ?? 'Kategori Yok') ?></p>
-      <p><strong>👨‍🍳 Ekleyen:</strong> <?= e($tarif['Ekleyen'] ?? 'Bilinmiyor') ?></p>
-      <p><strong>📅 Tarih:</strong> <?= date('d.m.Y', strtotime($tarif['EklemeTarihi'])) ?></p>
-    </div>
+    <div><b>Tarifi Ekleyen:</b> <?= e($tarif['KullaniciAdi']) ?></div>
 
-    <!-- Malzemeler -->
-    <div class="tarif-bolum">
-      <h3>🧂 Malzemeler</h3>
-      <div class="tarif-kutu"><?= nl2br(e($tarif['Malzemeler'])) ?></div>
-    </div>
+    <div class="detay-section-title">📌 Malzemeler</div>
+    <p><?= nl2br(e($tarif['Malzemeler'])) ?></p>
 
-    <!-- Hazırlanışı -->
-    <div class="tarif-bolum">
-      <h3>Hazırlanışı</h3>
-      <div class="tarif-kutu"><?= nl2br(e($tarif['Hazirlanis'])) ?></div>
-    </div>
+    <div class="detay-section-title">🍳 Yapılışı</div>
+    <p><?= nl2br(e($tarif['Hazirlanis'])) ?></p>
 
-  </div>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

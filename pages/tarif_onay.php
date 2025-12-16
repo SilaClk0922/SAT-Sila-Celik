@@ -2,171 +2,198 @@
 require __DIR__ . '/../includes/header.php';
 require_role('Admin');
 
-//  Tüm tarifleri durumlarına göre çek
-try {
-    $tarifler = [
-        'Bekleyen' => [],
-        'Onaylı' => [],
-        'Reddedildi' => []
-    ];
+/* Arama + Kategori Filtresi*/
+$ara = trim($_GET['ara'] ?? '');
+$kategori = $_GET['kategori'] ?? '';
 
-    $sorgu = $conn->query("
+/* Tarifleri Listele (Gruplu)*/
+try {
+    $sql = "
         SELECT 
             t.TarifID, t.TarifAdi, t.Goruntu, t.EklemeTarihi,
-            t.OnayDurumu, k.AdSoyad AS Ekleyen, c.KategoriAdi
+            t.OnayDurumu, k.AdSoyad AS Ekleyen, 
+            c.KategoriAdi, t.KategoriID
         FROM Tarifler t
         LEFT JOIN Kullanicilar k ON t.KullaniciID = k.KullaniciID
         LEFT JOIN Kategoriler c ON t.KategoriID = c.KategoriID
-        ORDER BY t.EklemeTarihi DESC
-    ");
+        WHERE 1=1
+    ";
 
-    while ($row = $sorgu->fetch(PDO::FETCH_ASSOC)) {
-        $durum = $row['OnayDurumu'] ?? 'Bekleyen';
-        $tarifler[$durum][] = $row;
+    $params = [];
+
+    if ($ara !== "") {
+        $sql .= " AND t.TarifAdi LIKE ? ";
+        $params[] = "%$ara%";
     }
+
+    if ($kategori !== "") {
+        $sql .= " AND t.KategoriID = ? ";
+        $params[] = $kategori;
+    }
+
+    $sql .= " ORDER BY t.EklemeTarihi DESC";
+    $s = $conn->prepare($sql);
+    $s->execute($params);
+    $ham = $s->fetchAll(PDO::FETCH_ASSOC);
+
+    /* Gruplandır */
+    $tarifler = [
+        "Bekleyen"   => [],
+        "Onaylı"     => [],
+        "Reddedildi" => []
+    ];
+
+    foreach ($ham as $t) {
+        $d = strtolower($t["OnayDurumu"] ?? "");
+
+        if ($d === "" || $d === "bekleyen")        
+            $grup = "Bekleyen";
+        elseif ($d === "onaylı" || $d === "onayli") 
+            $grup = "Onaylı";
+        elseif ($d === "reddedildi")               
+            $grup = "Reddedildi";
+        else                                        
+            $grup = "Bekleyen";
+
+        $tarifler[$grup][] = $t;
+    }
+
 } catch (PDOException $e) {
     flash('tarif_onay', 'Tarifler yüklenemedi: ' . $e->getMessage(), 'err');
 }
-
-//  Onay / Red işlemleri
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tarif_id'], $_POST['durum'])) {
-    $tarifID = (int)$_POST['tarif_id'];
-    $durum   = $_POST['durum'];
-    $csrf    = $_POST['_csrf'] ?? '';
-
-    if (!csrf_verify($csrf)) {
-        flash('tarif_onay', 'Güvenlik anahtarı geçersiz.', 'err');
-        redirect('/pages/tarif_onay.php');
-    }
-
-    try {
-        // AdminNotu artık yok
-        $stmt = $conn->prepare("
-            UPDATE Tarifler 
-            SET OnayDurumu = ?, OnayTarihi = GETDATE()
-            WHERE TarifID = ?
-        ");
-        $stmt->execute([$durum, $tarifID]);
-
-        $msg = $durum === 'Onaylı' ? 'Tarif onaylandı 🎉' : 'Tarif reddedildi ❌';
-        flash('tarif_onay', $msg, 'ok');
-    } catch (PDOException $e) {
-        flash('tarif_onay', 'Veritabanı hatası: ' . $e->getMessage(), 'err');
-    }
-
-    redirect('/pages/tarif_onay.php');
-}
 ?>
 
-<h2> Tarif Yönetimi</h2>
+<h2 style="text-align:center; margin-top:20px;"> Tarif Onay Paneli</h2>
 <?php render_flash('tarif_onay'); ?>
 
-<!-- Sekmeler -->
-<div class="tab-container">
-  <button class="tab-link active" data-tab="Bekleyen">🕓 Bekleyen</button>
-  <button class="tab-link" data-tab="Onaylı">✅ Onaylı</button>
-  <button class="tab-link" data-tab="Reddedildi">❌ Reddedilen</button>
-</div>
+<style>
+    .onay-kart-liste {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .onay-kart {
+        background: #fff;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        border: 1px solid #eee;
+    }
+    .onay-kart h4 {
+        margin-bottom: 6px;
+        font-size: 20px;
+        color: #6a30c7;
+    }
+    .onay-kart .bilgi {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 3px;
+    }
+    .durum-etiket {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .durum-bekleyen { background:#fff3cd; color:#b8860b; }
+    .durum-onaylı { background:#d4f5d6; color:#1d8a3a; }
+    .durum-reddedildi { background:#ffd6d6; color:#b33939; }
 
-<!-- Tab içerikleri -->
-<?php foreach (['Bekleyen', 'Onaylı', 'Reddedildi'] as $durum): ?>
-  <div class="tab-content <?= $durum === 'Bekleyen' ? 'active' : '' ?>" id="<?= $durum ?>">
-    <div class="admin-section">
-      <?php if (empty($tarifler[$durum])): ?>
-        <p><?= e($durum) ?> tarif bulunmamaktadır.</p>
-      <?php else: ?>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Tarif Adı</th>
-              <th>Kategori</th>
-              <th>Ekleyen</th>
-              <th>Tarih</th>
-              <th>Durum</th>
-              <th>İşlem</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php foreach ($tarifler[$durum] as $t): ?>
-            <tr>
-              <td><?= e($t['TarifID']) ?></td>
-              <td><?= e($t['TarifAdi']) ?></td>
-              <td><?= e($t['KategoriAdi'] ?? '-') ?></td>
-              <td><?= e($t['Ekleyen'] ?? '-') ?></td>
-              <td><?= date('d.m.Y', strtotime($t['EklemeTarihi'])) ?></td>
-              <td><span class="durum <?= strtolower($durum) ?>"><?= e($durum) ?></span></td>
-              <td>
-                <?php if ($durum === 'Bekleyen'): ?>
-                  <button class="btn-mini green"
-                          onclick="modalAc('Onaylı', <?= (int)$t['TarifID'] ?>)">Onayla</button>
-                  <button class="btn-mini red"
-                          onclick="modalAc('Reddedildi', <?= (int)$t['TarifID'] ?>)">Reddet</button>
+    .onay-kart-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn-mini {
+        padding: 8px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: white;
+        display: inline-block;
+    }
+    .btn-onayla { background:#28a745; }
+    .btn-reddet { background:#dc3545; }
+    .btn-bekle { background:#f39c12; }
+    .btn-view { background:#7b4bbe; }
+</style>
+
+<?php
+$gruplar = [
+    "Bekleyen"   => "🔄 Bekleyen Tarifler",
+    "Onaylı"     => "✅ Onaylı Tarifler",
+    "Reddedildi" => "❌ Reddedilmiş Tarifler"
+];
+
+foreach ($gruplar as $durum => $baslik):
+?>
+<div style="margin-top:40px;">
+    <h3><?= $baslik ?></h3>
+
+    <?php if (empty($tarifler[$durum])): ?>
+        <p style="background:white; padding:15px; border-radius:10px;">Bu kategoride tarif yok.</p>
+
+    <?php else: ?>
+
+    <div class="onay-kart-liste">
+
+        <?php foreach ($tarifler[$durum] as $t): ?>
+        <div class="onay-kart">
+
+            <h4><?= e($t['TarifAdi']) ?></h4>
+            <div class="bilgi"><b>Kategori:</b> <?= e($t['KategoriAdi']) ?></div>
+            <div class="bilgi"><b>Ekleyen:</b> <?= e($t['Ekleyen']) ?></div>
+            <div class="bilgi"><b>Tarih:</b> <?= date('d.m.Y', strtotime($t['EklemeTarihi'])) ?></div>
+
+            <span class="durum-etiket durum-<?= strtolower($durum) ?>">
+                <?= $durum ?>
+            </span>
+
+            <div class="onay-kart-actions">
+
+                <?php if ($durum === "Bekleyen"): ?>
+
+                    <!--Admin notu ile onaylama -->
+                    <a class="btn-mini btn-onayla"
+                       href="<?= SITE_URL ?>/pages/tarif_not.php?id=<?= $t['TarifID'] ?>&durum=Onaylı">
+                        Onayla
+                    </a>
+
+                    <!--Admin notu ile reddetme -->
+                    <a class="btn-mini btn-reddet"
+                       href="<?= SITE_URL ?>/pages/tarif_not.php?id=<?= $t['TarifID'] ?>&durum=Reddedildi">
+                        Reddet
+                    </a>
+
+                <?php else: ?>
+
+                    <!-- Geri beklemeye al  -->
+                    <a class="btn-mini btn-bekle"
+                       href="<?= SITE_URL ?>/pages/tarif_not.php?id=<?= $t['TarifID'] ?>&durum=Bekleyen">
+                        Beklemeye Al
+                    </a>
+
                 <?php endif; ?>
 
-                <a class="btn-mini"
-                   href="<?= SITE_URL ?>/pages/tarif_detay.php?id=<?= (int)$t['TarifID'] ?>">
-                   Görüntüle
+                <a class="btn-mini btn-view"
+                   href="<?= SITE_URL ?>/pages/tarif_detay.php?id=<?= $t['TarifID'] ?>">
+                    Görüntüle
                 </a>
-              </td>
-            </tr>
-          <?php endforeach; ?>
-          </tbody>
-        </table>
-      <?php endif; ?>
+
+            </div>
+        </div>
+        <?php endforeach; ?>
+
     </div>
-  </div>
-<?php endforeach; ?>
 
-<!-- Modal – textarea YOK -->
-<div id="onayModal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="modalKapat">&times;</span>
-    <h3 id="modalBaslik">Tarif İşlemi</h3>
-
-    <form method="post">
-      <?= csrf_input() ?>
-      <input type="hidden" name="tarif_id" id="tarif_id">
-      <input type="hidden" name="durum" id="durum">
-      <button type="submit" id="modalButon" style="margin-top: 15px;">Kaydet</button>
-    </form>
-  </div>
+    <?php endif; ?>
 </div>
-
-<script>
-// Sekmeler
-const tabs = document.querySelectorAll(".tab-link");
-const contents = document.querySelectorAll(".tab-content");
-
-tabs.forEach(btn => {
-  btn.addEventListener("click", () => {
-    tabs.forEach(b => b.classList.remove("active"));
-    contents.forEach(c => c.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.tab).classList.add("active");
-  });
-});
-
-// Modal
-const modal   = document.getElementById("onayModal");
-const span    = document.getElementById("modalKapat");
-const idInput = document.getElementById("tarif_id");
-const durumInput = document.getElementById("durum");
-const baslik  = document.getElementById("modalBaslik");
-const buton   = document.getElementById("modalButon");
-
-function modalAc(durum, id) {
-  modal.style.display = "block";
-  idInput.value = id;
-  durumInput.value = durum;
-
-  baslik.innerText = (durum === 'Onaylı') ? "Tarifi Onayla" : "Tarifi Reddet";
-  buton.innerText  = (durum === 'Onaylı') ? "Onayla"        : "Reddet";
-  buton.style.background = (durum === 'Onaylı') ? "var(--brand)" : "#e74c3c";
-}
-
-span.onclick = () => modal.style.display = "none";
-window.onclick = e => { if (e.target === modal) modal.style.display = "none"; }
-</script>
+<?php endforeach; ?>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

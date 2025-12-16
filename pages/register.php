@@ -1,97 +1,195 @@
 <?php
-// pages/register.php
 require __DIR__ . '/../includes/header.php';
 
-// Eğer kullanıcı zaten giriş yaptıysa yönlendir
+/* Zaten giriş yapmış kullanıcıyı anasayfaya yönlendirme */
 if (is_logged_in()) {
     redirect('/pages/index.php');
 }
 
-// Form gönderildiyse işle
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $adSoyad = trim($_POST['adsoyad'] ?? '');
+
+    $adsoyad = trim($_POST['adsoyad'] ?? '');
     $email   = trim($_POST['email'] ?? '');
     $sifre   = $_POST['sifre'] ?? '';
     $sifre2  = $_POST['sifre2'] ?? '';
     $csrf    = $_POST['_csrf'] ?? '';
 
-    // CSRF koruması
+    /*  CSRF doğrulaması
+       - Token geçersizse kayıt işlemi iptal edilir */
+
     if (!csrf_verify($csrf)) {
-        flash('register', 'Geçersiz oturum güvenlik anahtarı. Lütfen formu yeniden deneyin.', 'err');
+        flash('register', 'Geçersiz güvenlik anahtarı.', 'err');
         redirect('/pages/register.php');
     }
 
-    // Form doğrulama
-    if ($adSoyad === '' || $email === '' || $sifre === '' || $sifre2 === '') {
-        flash('register', 'Tüm alanlar doldurulmalıdır.', 'err');
+    /* Zorunlu alan kontrolü
+       - Boş alan varsa kullanıcı bilgilendirilir */
+
+    if ($adsoyad === '' || $email === '' || $sifre === '') {
+        flash('register', 'Lütfen tüm alanları doldurun.', 'err');
         redirect('/pages/register.php');
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        flash('register', 'Geçersiz e-posta adresi.', 'err');
-        redirect('/pages/register.php');
-    }
-
+    /* Şifre doğrulaması
+       - Şifreler eşleşmiyorsa işlem iptal edilir*/
     if ($sifre !== $sifre2) {
-        flash('register', 'Şifreler eşleşmiyor.', 'err');
+        flash('register', 'Şifreler uyuşmuyor!', 'err');
         redirect('/pages/register.php');
     }
-
-    if (strlen($sifre) < 6) {
-        flash('register', 'Şifre en az 6 karakter olmalıdır.', 'err');
-        redirect('/pages/register.php');
-    }
-
-    // Şifreyi hash’le
-    $sifreHash = password_hash($sifre, PASSWORD_BCRYPT);
 
     try {
-        // Aynı e-posta var mı?
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM Kullanicilar WHERE Email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->fetchColumn() > 0) {
-            flash('register', 'Bu e-posta adresiyle zaten bir hesap mevcut.', 'err');
+        // E-posta kontrolü
+        $kontrol = $conn->prepare("SELECT 1 FROM Kullanicilar WHERE Email = ?");
+        $kontrol->execute([$email]);
+
+        if ($kontrol->fetch()) {
+            flash('register', 'Bu e-posta zaten kayıtlı.', 'err');
             redirect('/pages/register.php');
         }
 
-        // Kullanıcıyı ekle
+        // Kayıt işlemi
         $stmt = $conn->prepare("
-            INSERT INTO Kullanicilar (AdSoyad, Email, Sifre, Rol)
-            VALUES (?, ?, ?, 'Kullanici')
+            INSERT INTO Kullanicilar (AdSoyad, Email, Sifre, Rol, Aktif)
+            VALUES (?, ?, ?, 'Kullanici', 1)
         ");
-        $stmt->execute([$adSoyad, $email, $sifreHash]);
 
-        // Otomatik giriş (oturum aç)
-        $_SESSION['KullaniciID'] = $conn->lastInsertId();
-        $_SESSION['AdSoyad'] = $adSoyad;
-        $_SESSION['Rol'] = 'Kullanici';
+        $stmt->execute([
+            $adsoyad,
+            $email,
+            password_hash($sifre, PASSWORD_BCRYPT)
+        ]);
 
-        flash('auth', 'Kayıt başarılı, hoş geldin ' . $adSoyad . '!', 'ok');
-        redirect('/pages/index.php');
+        flash('auth', 'Kayıt başarılı! Giriş yapabilirsiniz.', 'ok');
+        redirect('/pages/login.php');
 
     } catch (PDOException $e) {
-        flash('register', 'Veritabanı hatası: ' . $e->getMessage(), 'err');
+        flash('register', 'Veritabanı hatası: ' . e($e->getMessage()), 'err');
         redirect('/pages/register.php');
     }
 }
 ?>
 
-<h2>Kayıt Ol</h2>
-<form method="post" action="">
-    <?= csrf_input() ?>
-    <label>Ad Soyad:</label><br>
-    <input type="text" name="adsoyad" required><br><br>
+<style>
+/* --- FORM GENEL TASARIM --- */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
 
-    <label>E-posta:</label><br>
-    <input type="email" name="email" required><br><br>
+.auth-card {
+    width: 420px;
+    background: #fff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+}
 
-    <label>Şifre:</label><br>
-    <input type="password" name="sifre" required><br><br>
+.auth-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: var(--brand-dark);
+    font-weight: 700;
+}
 
-    <label>Şifre (Tekrar):</label><br>
-    <input type="password" name="sifre2" required><br><br>
+.input-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
 
-    <button type="submit">Kayıt Ol</button>
-</form>
+.input-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+/* --- BUTON TASARIMI --- */
+.auth-btn {
+    background: var(--brand-color);
+    color: #fff;
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.auth-btn:hover {
+    background: var(--brand-dark);
+    transform: translateY(-2px);
+}
+
+/* --- ALT METİN --- */
+.auth-bottom {
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+.auth-bottom a {
+    color: var(--brand-dark);
+    font-weight: 600;
+}
+</style>
+
+<!-- Kayıt formu arayüzü -->
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <h2 class="auth-title">Kayıt Ol</h2>
+
+        <?php render_flash('register'); ?>
+
+        <!--  Kayıt formu
+             - CSRF hidden input eklenir
+             - Ad Soyad, E-posta, Şifre, Şifre tekrar alanlar -->
+
+        <form method="post" action="">
+            <?= csrf_input() ?>
+
+            <div class="input-group">
+                <label for="adsoyad">Ad Soyad</label>
+                <input type="text" id="adsoyad" name="adsoyad" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="sifre">Şifre</label>
+                <input type="password" id="sifre" name="sifre" required>
+            </div>
+
+            <div class="input-group">
+                <label for="sifre2">Şifre (Tekrar)</label>
+                <input type="password" id="sifre2" name="sifre2" required>
+            </div>
+
+            <button class="auth-btn" type="submit">Kayıt Ol</button>
+        </form>
+        
+        <!--Giriş sayfasına yönlendiren alt bağlantı-->
+        <p class="auth-bottom">
+            Zaten hesabın var mı?
+            <a href="<?= SITE_URL ?>/pages/login.php">Giriş Yap</a>
+        </p>
+
+    </div>
+</div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
