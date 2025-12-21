@@ -1,13 +1,15 @@
-🍽️ Yemek Tarifi Sitesi
+🍽️ YEMEK TARİF SİTESİ
+
 
 Bu proje, kullanıcıların yemek tariflerini görüntüleyebildiği, tarif ekleyebildiği ve yönetebildiği web tabanlı bir Yemek Tarifi Platformudur.
 
 Proje, PHP, MySQL ve Bootstrap kullanılarak geliştirilmiştir ve katmanlı dosya yapısı, güvenli oturum yönetimi ve rol bazlı erişim kontrolü mantığına sahiptir.
 
 
-🚀 Proje Özellikleri
+🚀 PROJE ÖZELLİKLERİ
 
-👤 Kullanıcı İşlemleri
+👤 KULLANICI HİZMETLERİ
+
 
 Kullanıcı kayıt olma ve giriş yapma
 
@@ -18,7 +20,8 @@ Kullanıcı profil bilgilerini görüntüleme
 Yetkilendirme (Rol bazlı erişim)
 
 
-📖 Tarif İşlemleri
+📖 TARİF İŞLEMLERİ
+
 
 Yemek tariflerini listeleme
 
@@ -37,7 +40,8 @@ Onaylı
 Reddedildi
 
 
-🛡️ Güvenlik
+🛡️ GÜVENLİK
+
 
 CSRF Token kontrolü
 
@@ -48,7 +52,8 @@ Yetkisiz sayfa erişim engelleme
 Oturum kontrolü (Session validation)
 
 
-🧰 Kullanılan Teknolojiler
+🧰 KULLANILAN TEKNOLOJİLER
+
 
 Teknoloji	Açıklama
 
@@ -67,7 +72,8 @@ JavaScript	Dinamik kullanıcı etkileşimi
 Font Awesome	İkonlar
 
 
-🗂️ Proje Klasör Yapısı
+🗂️ PROJE KLASÖR YAPISI
+
 
 YemekTarifiSitesi/
 
@@ -122,7 +128,8 @@ YemekTarifiSitesi/
 └── README.md
 
 
-🗄️ Veritabanı Yapısı (Özet)
+🗄️ VERİTABANI YAPISI (Özet)
+
 
 Temel Tablolar:
 
@@ -143,7 +150,8 @@ Durum (status) alanları
 Tarihsel kayıt (created_at)
 
 
-🎯 Projenin Amacı
+🎯 PROJENİN AMACI
+
 
 PHP tabanlı web uygulaması geliştirme pratiği kazanmak
 
@@ -156,7 +164,8 @@ MVC benzeri dosya yapısı kullanmak
 CV ve staj başvuruları için referans proje oluşturmak
 
 
-📌 Geliştirilebilecek Özellikler
+📌 GELİŞTİRİLEBİLECEK ÖZELLİKLER
+
 
 Tarif puanlama ve yorum sistemi
 
@@ -169,7 +178,8 @@ Görsel yükleme
 API desteği (REST)
 
 
-👨‍💻 Geliştirici Notu
+👨‍💻 GELİŞTİRİCİ NOTU
+
 
 Bu proje, eğitim ve kişisel gelişim amacıyla geliştirilmiştir.
 
