@@ -1,6 +1,5 @@
 🍽️ YEMEK TARİF SİTESİ
-
-
+<img width="1896" height="886" alt="Ekran görüntüsü 2026-01-02 212745" src="https://github.com/user-attachments/assets/a5864f66-32fa-4a75-9450-6307022387f3" />
 Bu proje, kullanıcıların yemek tariflerini görüntüleyebildiği, tarif ekleyebildiği ve yönetebildiği web tabanlı bir Yemek Tarifi Platformudur.
 
 Proje, PHP, MySQL ve Bootstrap kullanılarak geliştirilmiştir ve katmanlı dosya yapısı, güvenli oturum yönetimi ve rol bazlı erişim kontrolü mantığına sahiptir.
