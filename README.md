@@ -31,6 +31,7 @@ Tarif detaylarını görüntüleme
 Yeni tarif ekleme
 
 Tarif onay / reddetme sistemi / kullanıcıya tarifi hakkında kısa not ekleme(Admin)
+<img width="932" height="762" alt="Ekran görüntüsü 2026-01-02 233031" src="https://github.com/user-attachments/assets/aeaa42f3-fffe-44d7-938c-4c474458b793" />
 
 Tarif durumları:
 
@@ -39,6 +40,8 @@ Bekleyen
 Onaylı
 
 Reddedildi
+
+<img width="943" height="727" alt="Ekran görüntüsü 2026-01-02 233154" src="https://github.com/user-attachments/assets/647a62af-4bd1-4be1-85c6-5630f7dccc34" />
 
 
 🛡️ GÜVENLİK
