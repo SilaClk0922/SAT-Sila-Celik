@@ -17,7 +17,8 @@ Oturum (Session) tabanlı kullanıcı yönetimi
 Kullanıcı profil bilgilerini görüntüleme
 
 Yetkilendirme (Rol bazlı erişim)
-![Uploading Ekran görüntüsü 2026-01-02 232717.png…]()
+
+<img width="1896" height="891" alt="Ekran görüntüsü 2026-01-02 232717" src="https://github.com/user-attachments/assets/be607a3e-f6ce-4079-a8de-4b59f6eca45b" />
 
 
 📖 TARİF İŞLEMLERİ
