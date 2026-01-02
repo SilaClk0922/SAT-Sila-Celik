@@ -17,6 +17,7 @@ Oturum (Session) tabanlı kullanıcı yönetimi
 Kullanıcı profil bilgilerini görüntüleme
 
 Yetkilendirme (Rol bazlı erişim)
+![Uploading Ekran görüntüsü 2026-01-02 232717.png…]()
 
 
 📖 TARİF İŞLEMLERİ
