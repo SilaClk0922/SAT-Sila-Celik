@@ -137,6 +137,8 @@ YemekTarifiSitesi/
 
 Temel Tablolar:
 
+<img width="251" height="296" alt="Ekran görüntüsü 2026-01-02 233439" src="https://github.com/user-attachments/assets/4495aab7-d9dc-4fb0-afdd-9a8095620ba4" />
+
 Kullanicilar
 
 Tarifler
